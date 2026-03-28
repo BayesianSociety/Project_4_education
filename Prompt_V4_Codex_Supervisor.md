@@ -117,6 +117,7 @@ Classification should be based on traceback and log text, not only exit code.
 
 The supervisor must not always send raw failure logs directly to Codex.
 It must perform local diagnosis first when possible.
+Before any repair attempt for any non-trivial failure, the supervisor must direct Codex to inspect the relevant code paths across the repository, not just the traceback and validator report, and identify the most likely root cause with file-level evidence.
 
 For stage-based validation failures, the supervisor must treat persisted validation artifacts as primary evidence, not optional context.
 
@@ -165,7 +166,7 @@ Rules:
 
 - always allow `orchestrator.py`
 - always allow `codex_supervisor.py`
-- allow `Prompt_V3.md` only when prompt hardening is relevant
+- allow `Prompt_V4_Codex_Supervisor.md` only when prompt hardening is relevant
 - allow application files only when the failure class requires them
 - when a strong local diagnosis points to a narrow root cause, narrow the editable set further
 - when a validator report cites concrete files, include those files in the editable set unless doing so would violate a stronger safety boundary
@@ -175,6 +176,7 @@ For deep failures:
 
 - for `artifact_validation`, `build_validation`, `runtime_validation`, or `unknown` failures, the supervisor must be able to inspect the whole repository and may grant Codex authority to edit any repository artifact except generated or control-state directories such as `.git`, `.orchestrator`, `.self_heal`, and transient worktree directories
 - this whole-repo authority must still remain auditable and bounded by structured logs plus changed-file checks
+- editable scope may remain bounded, but investigative scope must not be limited to the editable file set
 
 After Codex edits files, the supervisor must diff the repo state and block the repair if Codex changed files outside the allowed set.
 
@@ -206,7 +208,8 @@ The repair prompt must require:
 - treating local diagnosis and persisted validator findings as strong evidence unless clearly disproved by code
 - prioritizing files explicitly cited by the validator before speculative edits elsewhere
 - preferring validator-provided per-finding source files over heuristic file guessing
-- for deep failures, inspecting the repository systemically for cross-file causes rather than only reacting to the traceback
+- for `artifact_validation`, `build_validation`, `runtime_validation`, and `unknown` failures, Codex must perform a repo-wide root-cause analysis before proposing edits
+- for `artifact_validation`, `build_validation`, `runtime_validation`, and `unknown` failures, Codex must examine all files reasonably connected to the failing path, trace cross-file dependencies, and explain why the selected root cause is more likely than nearby symptoms
 - for deep failures, treating persisted validation reports as a starting point while still tracing the underlying root cause across the repo
 - when validator `source_files` are line-annotated, checking whether Stage 7 routing in `orchestrator.py` is failing before attempting broader application repairs
 
@@ -216,8 +219,11 @@ The Codex repair output schema must include at least:
 
 - `final_status`
 - `root_cause`
+- `root_cause_evidence`
 - `summary`
 - `changed_files`
+- `investigated_files`
+- `alternative_hypotheses_considered`
 - `verification`
 - `blockers`
 
