@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "status",
+    "summary",
+    "artifact_checks",
+    "build_checks",
+    "runtime_checks",
+    "failures"
+  ],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": [
+        "passed",
+        "failed",
+        "blocked"
+      ]
+    },
+    "summary": {
+      "type": "string"
+    },
+    "artifact_checks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "build_checks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "runtime_checks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "failures": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}
+

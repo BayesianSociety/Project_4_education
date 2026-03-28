@@ -1,0 +1,73 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scope",
+    "constraints",
+    "success_criteria",
+    "expected_outputs",
+    "stack_requirements",
+    "validation_expectations",
+    "missing_information",
+    "repository_constraints",
+    "asset_inputs"
+  ],
+  "properties": {
+    "scope": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "constraints": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "success_criteria": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "expected_outputs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "stack_requirements": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "validation_expectations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "missing_information": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "repository_constraints": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "asset_inputs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}
+
