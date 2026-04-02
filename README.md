@@ -31,6 +31,18 @@ Useful flags:
 python3 orchestrator.py --max-concurrency 2 --timeout-seconds 1800 --model gpt-5-codex
 ```
 
+Run the bounded self-healing supervisor when you want automatic failure capture plus conservative Codex repair attempts:
+
+```bash
+python3 codex_supervisor.py --project-brief Project_description.md
+```
+
+Useful supervisor flags:
+
+```bash
+python3 codex_supervisor.py --project-brief Project_description.md --max-run-attempts 3 --max-identical-failures 2 --verbose
+```
+
 ## What It Does
 
 - Uses `codex exec` for every role step.
@@ -62,3 +74,6 @@ python3 orchestrator.py --max-concurrency 2 --timeout-seconds 1800 --model gpt-5
 - It does not install packages or require network access for planner validation.
 - Verification logic is schema-driven and expects downstream Codex roles to read artifacts directly instead of inferring them from prose.
 - `git worktree` creation requires a writable `.git` directory. Preflight fails early if the repository checkout does not allow that.
+- `codex_supervisor.py` writes its self-heal audit trail under `.self_heal/`, including `attempts.jsonl`, per-run logs in `.self_heal/run_logs/`, per-repair records in `.self_heal/repair_logs/`, generated schemas in `.self_heal/schemas/`, and `.self_heal/final_report.json`.
+- The supervisor uses bounded `codex exec` repair attempts only. It snapshots the workspace, blocks out-of-scope edits, and stops on repeated identical failures or when the configured attempt budget is exhausted.
+- When an orchestrator implementation exposes checkpoint resume flags, the supervisor reruns conservatively from the earliest invalidated stage. In the current repository it falls back to a full restart because `orchestrator.py` does not yet expose `--resume-from-stage`.
